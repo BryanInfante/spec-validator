@@ -141,7 +141,7 @@
 
 ## FASE 9 — Publicación
 
-- [ ] **T-24** Agregar el validator al propio repo spec-gen como ejemplo
+- [x] **T-24** Agregar el validator al propio repo spec-gen como ejemplo
   - `.github/workflows/spec-validator.yml` en specgenerator-cli
   - Que la Action valide su propia spec en cada PR
 - [ ] **T-25** Publicar en GitHub Marketplace

@@ -4,6 +4,13 @@ import { SpecFiles, AnalysisResult } from './types';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL = 'llama-3.3-70b-versatile';
 
+function cleanContent(content: string): string {
+  return content
+    .replace(/\[([^\]]+)\]\(http[^)]+\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .trim();
+}
+
 export async function analyzeCoherence(files: SpecFiles, apiKey: string): Promise<AnalysisResult> {
   if (!apiKey) {
     core.warning('No se proporcionó GROQ_API_KEY. Se omitirá el análisis IA.');
@@ -19,13 +26,13 @@ export async function analyzeCoherence(files: SpecFiles, apiKey: string): Promis
   const prompt = `Eres un experto en Spec-Driven Development. Analiza estos 3 archivos de especificación y determina su coherencia.
 
 REQUIREMENTS.md:
-${files.requirements.content}
+${cleanContent(files.requirements.content)}
 
 DESIGN.md:
-${files.design.content}
+${cleanContent(files.design.content)}
 
 TASKS.md:
-${files.tasks.content}
+${cleanContent(files.tasks.content)}
 
 Responde SOLO en JSON con esta estructura exacta:
 {
