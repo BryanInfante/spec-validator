@@ -1,0 +1,10 @@
+node_modules/
+# dist/ is required by GitHub Actions
+# !dist/index.js
+
+# Testing
+coverage/
+
+# Misc
+.DS_Store
+.env

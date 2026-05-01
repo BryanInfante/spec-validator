@@ -1,0 +1,36 @@
+name: 'Spec Validator'
+description: 'Verifica coherencia de specs SDD en PRs'
+author: 'BryanInfante'
+
+inputs:
+  groq-api-key:
+    description: 'API key de Groq para análisis IA'
+    required: false
+  min-score:
+    description: 'Score mínimo de coherencia (0-100)'
+    required: false
+    default: '70'
+  fail-on-warning:
+    description: 'Fallar si hay warnings además de errores'
+    required: false
+    default: 'false'
+  files-path:
+    description: 'Ruta donde buscar los archivos de spec'
+    required: false
+    default: '.'
+
+outputs:
+  score:
+    description: 'Score de coherencia (0-100)'
+  passed:
+    description: 'true si pasó la validación'
+  issues-count:
+    description: 'Número de problemas detectados'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'check-square'
+  color: 'blue'
