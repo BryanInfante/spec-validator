@@ -30007,6 +30007,12 @@ Criterios de evaluación:
 - ¿Hay contradicciones entre los 3 documentos?
 - ¿El diseño es suficiente para implementar los requisitos?`;
     try {
+        /*
+         * ADR-05: Eliminación de response_format: { type: 'json_object' }
+         * Razón: El modo json_object de Groq es inestable cuando el contenido del prompt tiene patrones como links Markdown,
+         * caracteres especiales o texto largo. Groq falla generando JSON inválido en vez de retornar error HTTP.
+         * Es más robusto dejar que el modelo responda libremente y extraer el JSON manualmente buscando los delimitadores { y }.
+         */
         const response = await fetch(GROQ_API_URL, {
             method: 'POST',
             headers: {
@@ -30025,8 +30031,7 @@ Criterios de evaluación:
                         content: prompt
                     }
                 ],
-                temperature: 0.1,
-                response_format: { type: 'json_object' }
+                temperature: 0.1
             }),
             signal: AbortSignal.timeout(30000) // 30 seconds timeout
         });
@@ -30040,7 +30045,14 @@ Criterios de evaluación:
             throw new Error('La API de Groq devolvió una respuesta vacía.');
         }
         try {
-            const parsed = JSON.parse(content);
+            // Extracción manual de JSON (ADR-05)
+            const firstBrace = content.indexOf('{');
+            const lastBrace = content.lastIndexOf('}');
+            if (firstBrace === -1 || lastBrace === -1) {
+                throw new Error('No se encontró un objeto JSON válido en la respuesta de la IA.');
+            }
+            const jsonString = content.substring(firstBrace, lastBrace + 1);
+            const parsed = JSON.parse(jsonString);
             return {
                 score: typeof parsed.score === 'number' ? parsed.score : 50,
                 issues: Array.isArray(parsed.issues) ? parsed.issues : [],
@@ -30049,7 +30061,7 @@ Criterios de evaluación:
             };
         }
         catch (parseError) {
-            core.error(`Error al parsear JSON de la IA: ${content}`);
+            core.error(`Error al extraer/parsear JSON de la IA: ${content}`);
             return {
                 score: 50,
                 issues: ['Error de parseo en la respuesta de la IA'],
