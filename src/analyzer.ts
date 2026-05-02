@@ -23,7 +23,11 @@ export async function analyzeCoherence(files: SpecFiles, apiKey: string): Promis
     };
   }
 
-  const prompt = `Eres un experto en Spec-Driven Development. Analiza estos 3 archivos de especificación y determina su coherencia.
+  const prompt = `IMPORTANTE: Solo existen estos 3 archivos. No inventes ni referencias archivos adicionales como DATABASE.md, API.md u otros.
+Analiza ÚNICAMENTE el contenido proporcionado.
+Tu respuesta debe ser JSON puro sin texto adicional.
+
+Eres un experto en Spec-Driven Development. Analiza estos 3 archivos de especificación y determina su coherencia.
 
 REQUIREMENTS.md:
 ${cleanContent(files.requirements.content)}
